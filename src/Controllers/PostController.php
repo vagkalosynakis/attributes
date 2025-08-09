@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Attributes\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -16,6 +17,7 @@ class PostController
         3 => ['id' => 3, 'title' => 'Third Post', 'content' => 'This is the third post content']
     ];
 
+    #[Route('GET', '/posts', 'posts.index')]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([
@@ -25,6 +27,7 @@ class PostController
         ]);
     }
 
+    #[Route('GET', '/posts/{id:number}', 'posts.show')]
     public function show(ServerRequestInterface $request): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');

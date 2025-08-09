@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Attributes\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 
 class HomeController
 {
+    #[Route('GET', '/', 'home')]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([
@@ -20,6 +22,7 @@ class HomeController
         ]);
     }
 
+    #[Route('GET', '/about', 'about')]
     public function about(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([

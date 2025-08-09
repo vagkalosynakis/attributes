@@ -6,8 +6,10 @@ namespace App\Container;
 
 use App\Controllers\HomeController;
 use App\Controllers\PostController;
+use App\Services\RouteDiscovery;
 use DI\Container;
 use DI\ContainerBuilder;
+use League\Route\Router;
 
 class ContainerConfig
 {
@@ -16,6 +18,12 @@ class ContainerConfig
         $builder = new ContainerBuilder();
         
         $builder->addDefinitions([
+            // Router
+            Router::class => \DI\autowire(),
+            
+            // Services
+            RouteDiscovery::class => \DI\autowire(),
+            
             // Controllers
             HomeController::class => \DI\autowire(),
             PostController::class => \DI\autowire(),

@@ -7,30 +7,30 @@ require_once 'vendor/autoload.php';
 use App\Container\ContainerConfig;
 use App\Controllers\HomeController;
 use App\Controllers\PostController;
+use App\Services\RouteDiscovery;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 try {
     // Create DI Container
     $container = ContainerConfig::create();
 
-    // Create router
-    $router = new Router();
+    // Get router from container
+    $router = $container->get(Router::class);
 
     // Set up strategy to use DI container
     $strategy = new ApplicationStrategy();
     $strategy->setContainer($container);
     $router->setStrategy($strategy);
 
-    // Define routes
-    $router->map('GET', '/', [HomeController::class, 'index']);
-    $router->map('GET', '/about', [HomeController::class, 'about']);
-    $router->map('GET', '/posts', [PostController::class, 'index']);
-    $router->map('GET', '/posts/{id:number}', [PostController::class, 'show']);
+    // Discover and register routes from attributes
+    $routeDiscovery = $container->get(RouteDiscovery::class);
+    $routeDiscovery->discoverRoutes([
+        HomeController::class,
+        PostController::class,
+    ]);
 
     // Create server request
     $request = ServerRequestFactory::fromGlobals();
