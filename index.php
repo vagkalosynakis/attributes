@@ -5,8 +5,6 @@ declare(strict_types=1);
 require_once 'vendor/autoload.php';
 
 use App\Container\ContainerConfig;
-use App\Controllers\HomeController;
-use App\Controllers\PostController;
 use App\Services\RouteDiscovery;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
@@ -25,11 +23,10 @@ try {
     $strategy->setContainer($container);
     $router->setStrategy($strategy);
 
-    // Discover and register routes from attributes
+    // Automatically discover controllers and register routes from attributes
     $routeDiscovery = $container->get(RouteDiscovery::class);
     $routeDiscovery->discoverRoutes([
-        HomeController::class,
-        PostController::class,
+        __DIR__ . '/src/Controllers'
     ]);
 
     // Create server request
