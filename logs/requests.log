@@ -1,0 +1,10 @@
+[2025-08-11 18:45:54] GET http://localhost:8000/ - 200 - 34.5 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-08-11 18:46:01] GET http://localhost:8000/ - 200 - 0.41 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-08-11 18:49:34] GET http://localhost:8000/ - 200 - 0.63 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-08-11 18:50:15] GET http://localhost:8000/ - 200 - 0.89 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-08-11 18:50:44] GET http://localhost:8000/ - 200 - 0.72 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-08-11 18:50:46] GET http://localhost:8000/ - 200 - 0.46 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-08-11 18:51:02] GET http://localhost:8000/ - 200 - 0.45 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-08-11 18:51:08] GET http://localhost:8000/ - 200 - 0.53 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-08-11 18:51:58] GET http://localhost:8000/ - 200 - 0.78 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0
+[2025-09-09 20:23:33] GET http://localhost:3000/ - 200 - 23.84 ms - IP: ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0
