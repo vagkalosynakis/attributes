@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Attributes\Middleware;
 use App\Attributes\Route;
+use App\Middleware\LoggingMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 
+#[Middleware([LoggingMiddleware::class])]
 class PostController
 {
     private array $posts = [
@@ -43,5 +46,29 @@ class PostController
             'message' => 'Post details',
             'post' => $this->posts[$id]
         ]);
+    }
+
+    #[Route('POST', '/posts', 'posts.create')]
+    public function create(ServerRequestInterface $request): ResponseInterface
+    {
+        $user = $request->getAttribute('user');
+        $body = json_decode($request->getBody()->getContents(), true);
+        
+        $newId = max(array_keys($this->posts)) + 1;
+        $newPost = [
+            'id' => $newId,
+            'title' => $body['title'] ?? 'Untitled',
+            'content' => $body['content'] ?? '',
+            'created_by' => $user['username'],
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        
+        $this->posts[$newId] = $newPost;
+        
+        return new JsonResponse([
+            'message' => 'Post created successfully',
+            'post' => $newPost,
+            'user' => $user
+        ], 201);
     }
 }

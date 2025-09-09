@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Attributes\Middleware;
 use App\Attributes\Route;
 use DirectoryIterator;
 use League\Route\Router;
+use League\Route\Route as LeagueRoute;
 use ReflectionClass;
 use ReflectionMethod;
 use DI\Container;
@@ -94,19 +96,53 @@ class RouteDiscovery
     {
         $reflectionClass = new ReflectionClass($controllerClass);
         
+        // Get class-level middleware
+        $classMiddleware = $this->getMiddlewareFromAttributes($reflectionClass->getAttributes(Middleware::class));
+        
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            $attributes = $method->getAttributes(Route::class);
+            $routeAttributes = $method->getAttributes(Route::class);
             
-            foreach ($attributes as $attribute) {
+            foreach ($routeAttributes as $routeAttribute) {
                 /** @var Route $route */
-                $route = $attribute->newInstance();
+                $route = $routeAttribute->newInstance();
                 
-                $this->router->map(
+                // Get method-level middleware
+                $methodMiddleware = $this->getMiddlewareFromAttributes($method->getAttributes(Middleware::class));
+                
+                // Combine class and method middleware (class middleware first)
+                $allMiddleware = array_merge($classMiddleware, $methodMiddleware);
+                
+                // Register the route
+                $leagueRoute = $this->router->map(
                     strtoupper($route->method),
                     $route->path,
                     [$controllerClass, $method->getName()]
                 );
+                
+                // Add middleware to the route
+                foreach ($allMiddleware as $middlewareClass) {
+                    $leagueRoute->middleware($this->container->get($middlewareClass));
+                }
             }
         }
+    }
+
+    /**
+     * Extract middleware classes from middleware attributes
+     * 
+     * @param array $middlewareAttributes
+     * @return array<string>
+     */
+    private function getMiddlewareFromAttributes(array $middlewareAttributes): array
+    {
+        $middleware = [];
+        
+        foreach ($middlewareAttributes as $attribute) {
+            /** @var Middleware $middlewareAttr */
+            $middlewareAttr = $attribute->newInstance();
+            $middleware = array_merge($middleware, $middlewareAttr->middlewareClasses);
+        }
+        
+        return $middleware;
     }
 }

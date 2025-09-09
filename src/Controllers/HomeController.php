@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Attributes\Middleware;
 use App\Attributes\Route;
+use App\Middleware\LoggingMiddleware;
+use App\Middleware\LoggingMiddleware2;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -12,6 +15,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 class HomeController
 {
     #[Route('GET', '/', 'home')]
+    #[Middleware([LoggingMiddleware::class])]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([
@@ -23,6 +27,7 @@ class HomeController
     }
 
     #[Route('GET', '/about', 'about')]
+    #[Middleware([LoggingMiddleware::class])]
     public function about(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([
