@@ -15,7 +15,6 @@ use Laminas\Diactoros\Response\JsonResponse;
 class HomeController
 {
     #[Route('GET', '/', 'home')]
-    #[Middleware([LoggingMiddleware::class])]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([
@@ -27,7 +26,6 @@ class HomeController
     }
 
     #[Route('GET', '/about', 'about')]
-    #[Middleware([LoggingMiddleware::class])]
     public function about(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([

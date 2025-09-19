@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Attributes\Middleware;
+use App\Attributes\MiddlewareGroup;
 use App\Attributes\Route;
+use App\Middleware\LoggingMiddleware;
+use App\Middleware\LoggingMiddleware2;
+use App\Middleware\LoggingMiddleware3;
+use App\Middleware\LoggingMiddleware4;
 use DirectoryIterator;
 use League\Route\Router;
 use League\Route\Route as LeagueRoute;
@@ -15,6 +20,21 @@ use DI\Container;
 
 class RouteDiscovery
 {
+    /**
+     * Predefined middleware groups
+     * @var array<string, array<string>>
+     */
+    private array $middlewareGroups = [
+        'group_1' => [
+            LoggingMiddleware::class,
+            LoggingMiddleware2::class,
+        ],
+        'group_2' => [
+            LoggingMiddleware3::class,
+            LoggingMiddleware4::class,
+        ],
+    ];
+
     public function __construct(
         private Router $router,
         private Container $container
@@ -99,6 +119,12 @@ class RouteDiscovery
         // Get class-level middleware
         $classMiddleware = $this->getMiddlewareFromAttributes($reflectionClass->getAttributes(Middleware::class));
         
+        // Get class-level middleware groups
+        $classMiddlewareGroups = $this->getMiddlewareFromGroupAttributes($reflectionClass->getAttributes(MiddlewareGroup::class));
+        
+        // Combine class middleware and middleware groups
+        $classMiddleware = array_merge($classMiddleware, $classMiddlewareGroups);
+        
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $routeAttributes = $method->getAttributes(Route::class);
             
@@ -108,6 +134,12 @@ class RouteDiscovery
                 
                 // Get method-level middleware
                 $methodMiddleware = $this->getMiddlewareFromAttributes($method->getAttributes(Middleware::class));
+                
+                // Get method-level middleware groups
+                $methodMiddlewareGroups = $this->getMiddlewareFromGroupAttributes($method->getAttributes(MiddlewareGroup::class));
+                
+                // Combine method middleware and middleware groups
+                $methodMiddleware = array_merge($methodMiddleware, $methodMiddlewareGroups);
                 
                 // Combine class and method middleware (class middleware first)
                 $allMiddleware = array_merge($classMiddleware, $methodMiddleware);
@@ -141,6 +173,29 @@ class RouteDiscovery
             /** @var Middleware $middlewareAttr */
             $middlewareAttr = $attribute->newInstance();
             $middleware = array_merge($middleware, $middlewareAttr->middlewareClasses);
+        }
+        
+        return $middleware;
+    }
+
+    /**
+     * Extract middleware classes from middleware group attributes
+     * 
+     * @param array $middlewareGroupAttributes
+     * @return array<string>
+     */
+    private function getMiddlewareFromGroupAttributes(array $middlewareGroupAttributes): array
+    {
+        $middleware = [];
+        
+        foreach ($middlewareGroupAttributes as $attribute) {
+            /** @var MiddlewareGroup $middlewareGroupAttr */
+            $middlewareGroupAttr = $attribute->newInstance();
+            $groupName = $middlewareGroupAttr->group;
+            
+            if (isset($this->middlewareGroups[$groupName])) {
+                $middleware = array_merge($middleware, $this->middlewareGroups[$groupName]);
+            }
         }
         
         return $middleware;
