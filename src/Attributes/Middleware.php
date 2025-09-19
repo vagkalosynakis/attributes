@@ -14,6 +14,5 @@ class Middleware
      */
     public function __construct(
         readonly array $middlewareClasses
-    ) {
-    }
+    ) { }
 }

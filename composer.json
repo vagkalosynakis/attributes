@@ -3,7 +3,7 @@
     "description": "Simple PHP 8.4 project with League Router and PHP-DI",
     "type": "project",
     "require": {
-        "php": "^8.4",
+        "php": "^8.0",
         "league/route": "^5.1",
         "php-di/php-di": "^7.0",
         "laminas/laminas-diactoros": "^3.3",
