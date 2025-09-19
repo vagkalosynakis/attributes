@@ -1,2 +1,0 @@
-[2025-09-19 22:22:53] GET http://localhost:8000/test1 - 200 - 1.94 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
-[2025-09-19 22:22:56] GET http://localhost:8000/test2 - 200 - 2.96 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36

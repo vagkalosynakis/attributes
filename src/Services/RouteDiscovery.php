@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Attributes\Middleware;
 use App\Attributes\MiddlewareGroup;
 use App\Attributes\Route;
+use App\Attributes\WithoutMiddleware;
 use App\Middleware\LoggingMiddleware;
 use App\Middleware\LoggingMiddleware2;
 use App\Middleware\LoggingMiddleware3;
@@ -122,8 +123,12 @@ class RouteDiscovery
         // Get class-level middleware groups
         $classMiddlewareGroups = $this->getMiddlewareFromGroupAttributes($reflectionClass->getAttributes(MiddlewareGroup::class));
         
-        // Combine class middleware and middleware groups
+        // Get class-level middleware exclusions
+        $classExcludedMiddleware = $this->getExcludedMiddlewareFromAttributes($reflectionClass->getAttributes(WithoutMiddleware::class));
+        
+        // Combine class middleware and middleware groups, then remove excluded ones
         $classMiddleware = array_merge($classMiddleware, $classMiddlewareGroups);
+        $classMiddleware = array_diff($classMiddleware, $classExcludedMiddleware);
         
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $routeAttributes = $method->getAttributes(Route::class);
@@ -138,11 +143,18 @@ class RouteDiscovery
                 // Get method-level middleware groups
                 $methodMiddlewareGroups = $this->getMiddlewareFromGroupAttributes($method->getAttributes(MiddlewareGroup::class));
                 
-                // Combine method middleware and middleware groups
+                // Get method-level middleware exclusions
+                $methodExcludedMiddleware = $this->getExcludedMiddlewareFromAttributes($method->getAttributes(WithoutMiddleware::class));
+                
+                // Combine method middleware and middleware groups, then remove excluded ones
                 $methodMiddleware = array_merge($methodMiddleware, $methodMiddlewareGroups);
+                $methodMiddleware = array_diff($methodMiddleware, $methodExcludedMiddleware);
                 
                 // Combine class and method middleware (class middleware first)
                 $allMiddleware = array_merge($classMiddleware, $methodMiddleware);
+                
+                // Remove any duplicates that might have been introduced
+                $allMiddleware = array_unique($allMiddleware);
                 
                 // Register the route
                 $leagueRoute = $this->router->map(
@@ -199,5 +211,24 @@ class RouteDiscovery
         }
         
         return $middleware;
+    }
+
+    /**
+     * Extract middleware classes to exclude from WithoutMiddleware attributes
+     * 
+     * @param array $withoutMiddlewareAttributes
+     * @return array<string>
+     */
+    private function getExcludedMiddlewareFromAttributes(array $withoutMiddlewareAttributes): array
+    {
+        $excludedMiddleware = [];
+        
+        foreach ($withoutMiddlewareAttributes as $attribute) {
+            /** @var WithoutMiddleware $withoutMiddlewareAttr */
+            $withoutMiddlewareAttr = $attribute->newInstance();
+            $excludedMiddleware = array_merge($excludedMiddleware, $withoutMiddlewareAttr->middlewareClasses);
+        }
+        
+        return $excludedMiddleware;
     }
 }
