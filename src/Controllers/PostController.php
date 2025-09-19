@@ -20,7 +20,7 @@ class PostController
         3 => ['id' => 3, 'title' => 'Third Post', 'content' => 'This is the third post content']
     ];
 
-    #[Route('GET', '/posts', 'posts.index')]
+    #[Route('api', 'GET', '/posts', 'posts.index')]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([
@@ -30,7 +30,7 @@ class PostController
         ]);
     }
 
-    #[Route('GET', '/posts/{id:number}', 'posts.show')]
+    #[Route('api', 'GET', '/posts/{id:number}', 'posts.show')]
     public function show(ServerRequestInterface $request): ResponseInterface
     {
         $id = (int) $request->getAttribute('id');
@@ -48,7 +48,7 @@ class PostController
         ]);
     }
 
-    #[Route('POST', '/posts', 'posts.create')]
+    #[Route('api', 'POST', '/posts', 'posts.create')]
     public function create(ServerRequestInterface $request): ResponseInterface
     {
         $user = $request->getAttribute('user');

@@ -14,7 +14,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 
 class HomeController
 {
-    #[Route('GET', '/', 'home')]
+    #[Route('', 'GET', '/', 'home')]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([
@@ -25,7 +25,7 @@ class HomeController
         ]);
     }
 
-    #[Route('GET', '/about', 'about')]
+    #[Route('', 'GET', '/about', 'about')]
     public function about(ServerRequestInterface $request): ResponseInterface
     {
         return new JsonResponse([

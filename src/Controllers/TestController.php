@@ -15,7 +15,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 
 class TestController
 {
-    #[Route('GET', '/test1')]
+    #[Route('test', 'GET', '/test1')]
     #[Middleware([LoggingMiddleware::class])]
     public function test1(ServerRequestInterface $request): ResponseInterface
     {
@@ -27,7 +27,7 @@ class TestController
         ]);
     }
 
-    #[Route('GET', '/test2')]
+    #[Route('test', 'GET', '/test2')]
     #[MiddlewareGroup('group_1')]
     public function test2(ServerRequestInterface $request): ResponseInterface
     {
@@ -39,7 +39,7 @@ class TestController
         ]);
     }
 
-    #[Route('GET', '/test3')]
+    #[Route('test', 'GET', '/test3')]
     #[MiddlewareGroup('group_1')]
     #[WithoutMiddleware([LoggingMiddleware::class])]
     public function test3(ServerRequestInterface $request): ResponseInterface

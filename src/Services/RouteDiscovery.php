@@ -137,6 +137,9 @@ class RouteDiscovery
                 /** @var Route $route */
                 $route = $routeAttribute->newInstance();
                 
+                // Build the final route path with prefix
+                $finalPath = $this->buildRoutePath($route->prefix, $route->path);
+                
                 // Get method-level middleware
                 $methodMiddleware = $this->getMiddlewareFromAttributes($method->getAttributes(Middleware::class));
                 
@@ -159,7 +162,7 @@ class RouteDiscovery
                 // Register the route
                 $leagueRoute = $this->router->map(
                     strtoupper($route->method),
-                    $route->path,
+                    $finalPath,
                     [$controllerClass, $method->getName()]
                 );
                 
@@ -230,5 +233,27 @@ class RouteDiscovery
         }
         
         return $excludedMiddleware;
+    }
+
+    /**
+     * Build the final route path by combining prefix and route path
+     */
+    private function buildRoutePath(string $prefix, string $routePath): string
+    {
+        $parts = [];
+        
+        // Add prefix (always present now)
+        if ($prefix !== '') {
+            $parts[] = trim($prefix, '/');
+        }
+        
+        // Add the route path
+        $parts[] = trim($routePath, '/');
+        
+        // Join with slashes and ensure it starts with a slash
+        $finalPath = '/' . implode('/', array_filter($parts));
+        
+        // Handle root path case
+        return $finalPath === '/' ? '/' : rtrim($finalPath, '/');
     }
 }
