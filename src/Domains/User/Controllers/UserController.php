@@ -2,31 +2,31 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\Post\Controllers;
+namespace App\Domains\User\Controllers;
 
 use App\Domains\Infrastructure\Attributes\Route;
-use App\Domains\Post\Services\PostService;
+use App\Domains\User\Services\UserService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 
-class PostController
+class UserController
 {
     public function __construct(
-        private PostService $postService
+        private UserService $userService
     ) {
     }
 
-    #[Route(method: 'GET', path: '/posts', prefix: 'api')]
+    #[Route(method: 'GET', path: '/users', prefix: 'api')]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         try {
-            $posts = $this->postService->getPostsWithUsers();
+            $users = $this->userService->getAllUsers();
             
             return new JsonResponse([
                 'success' => true,
-                'data' => $posts,
-                'count' => count($posts)
+                'data' => $users,
+                'count' => count($users)
             ]);
         } catch (\Exception $e) {
             return new JsonResponse([
@@ -36,23 +36,23 @@ class PostController
         }
     }
 
-    #[Route(method: 'GET', path: '/posts/{id:number}', prefix: 'api')]
+    #[Route(method: 'GET', path: '/users/{id:number}', prefix: 'api')]
     public function show(ServerRequestInterface $request): ResponseInterface
     {
         try {
             $id = (int) $request->getAttribute('id');
-            $post = $this->postService->getPostById($id);
+            $user = $this->userService->getUserById($id);
             
-            if (!$post) {
+            if (!$user) {
                 return new JsonResponse([
                     'success' => false,
-                    'error' => 'Post not found'
+                    'error' => 'User not found'
                 ], 404);
             }
             
             return new JsonResponse([
                 'success' => true,
-                'data' => $post
+                'data' => $user
             ]);
         } catch (\Exception $e) {
             return new JsonResponse([
@@ -62,7 +62,7 @@ class PostController
         }
     }
 
-    #[Route(method: 'POST', path: '/posts', prefix: 'api')]
+    #[Route(method: 'POST', path: '/users', prefix: 'api')]
     public function create(ServerRequestInterface $request): ResponseInterface
     {
         try {
@@ -75,12 +75,12 @@ class PostController
                 ], 400);
             }
             
-            $post = $this->postService->createPost($body);
+            $user = $this->userService->createUser($body);
             
             return new JsonResponse([
                 'success' => true,
-                'data' => $post,
-                'message' => 'Post created successfully'
+                'data' => $user,
+                'message' => 'User created successfully'
             ], 201);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse([
@@ -95,7 +95,7 @@ class PostController
         }
     }
 
-    #[Route(method: 'PUT', path: '/posts/{id:number}', prefix: 'api')]
+    #[Route(method: 'PUT', path: '/users/{id:number}', prefix: 'api')]
     public function update(ServerRequestInterface $request): ResponseInterface
     {
         try {
@@ -109,12 +109,12 @@ class PostController
                 ], 400);
             }
             
-            $post = $this->postService->updatePost($id, $body);
+            $user = $this->userService->updateUser($id, $body);
             
             return new JsonResponse([
                 'success' => true,
-                'data' => $post,
-                'message' => 'Post updated successfully'
+                'data' => $user,
+                'message' => 'User updated successfully'
             ]);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse([
@@ -129,17 +129,17 @@ class PostController
         }
     }
 
-    #[Route(method: 'DELETE', path: '/posts/{id:number}', prefix: 'api')]
+    #[Route(method: 'DELETE', path: '/users/{id:number}', prefix: 'api')]
     public function delete(ServerRequestInterface $request): ResponseInterface
     {
         try {
             $id = (int) $request->getAttribute('id');
             
-            $this->postService->deletePost($id);
+            $this->userService->deleteUser($id);
             
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Post deleted successfully'
+                'message' => 'User deleted successfully'
             ]);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse([
@@ -153,31 +153,4 @@ class PostController
             ], 500);
         }
     }
-
-    #[Route(method: 'GET', path: '/posts/search', prefix: 'api')]
-    public function search(ServerRequestInterface $request): ResponseInterface
-    {
-        try {
-            $queryParams = $request->getQueryParams();
-            $title = $queryParams['title'] ?? '';
-            
-            $posts = $this->postService->searchPostsByTitle($title);
-            
-            return new JsonResponse([
-                'success' => true,
-                'data' => $posts,
-                'count' => count($posts)
-            ]);
-        } catch (\InvalidArgumentException $e) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 400);
-        } catch (\Exception $e) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-}
+} 

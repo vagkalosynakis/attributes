@@ -7,9 +7,11 @@ services:
       - "8000:80"
     volumes:
       - .:/app
+      - ./data:/app/data  # SQLite database storage
     environment:
       - WEB_DOCUMENT_ROOT=/app
       - PHP_DISPLAY_ERRORS=1
       - PHP_MEMORY_LIMIT=512M
+      - DATABASE_PATH=/app/data/database.sqlite
     working_dir: /app
     restart: unless-stopped 

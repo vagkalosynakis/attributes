@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domains\Infrastructure\Container;
 
+use App\Domains\Database\Services\DatabaseService;
+use App\Domains\User\Repositories\UserRepository;
+use App\Domains\User\Services\UserService;
+use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Services\PostService;
 use DI\Container;
 use DI\ContainerBuilder;
 
@@ -15,9 +20,33 @@ class ContainerConfig
         
         $builder->useAutowiring(true);
         
-        // $builder->addDefinitions([
-        //     // Add custom definitions here if needed
-        // ]);
+        $builder->addDefinitions([
+            // Database services
+            DatabaseService::class => function () {
+                $service = new DatabaseService();
+                // Initialize tables on first connection
+                $service->initializeTables();
+                return $service;
+            },
+            
+            // User domain
+            UserRepository::class => function (Container $container) {
+                return new UserRepository($container->get(DatabaseService::class));
+            },
+            
+            UserService::class => function (Container $container) {
+                return new UserService($container->get(UserRepository::class));
+            },
+            
+            // Post domain
+            PostRepository::class => function (Container $container) {
+                return new PostRepository($container->get(DatabaseService::class));
+            },
+            
+            PostService::class => function (Container $container) {
+                return new PostService($container->get(PostRepository::class));
+            },
+        ]);
 
         return $builder->build();
     }
