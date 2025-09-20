@@ -1,3 +1,4 @@
-[2025-09-19 22:41:40] GET http://localhost:8000/test/test2 - 200 - 6.23 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
-[2025-09-19 22:41:51] GET http://localhost:8000/test/test2 - 200 - 2.21 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
-[2025-09-19 22:41:55] GET http://localhost:8000/test/test2 - 200 - 2.91 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
+[2025-09-20 06:40:46] GET http://localhost:8000/test1 - 200 - 1.86 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:142.0) Gecko/20100101 Firefox/142.0
+[2025-09-20 06:41:39] GET http://localhost:8000/test1 - 200 - 5.79 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:142.0) Gecko/20100101 Firefox/142.0
+[2025-09-20 06:41:44] GET http://localhost:8000/test2 - 200 - 3.09 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:142.0) Gecko/20100101 Firefox/142.0
+[2025-09-20 06:42:18] GET http://localhost:8000/test3 - 200 - 2.25 ms - IP: 172.21.0.1 - User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:142.0) Gecko/20100101 Firefox/142.0

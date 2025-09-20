@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 require_once 'vendor/autoload.php';
 
-use App\Container\ContainerConfig;
-use App\Services\RouteDiscovery;
+use App\Domains\Infrastructure\Container\ContainerConfig;
+use App\Domains\Infrastructure\Services\RouteDiscovery;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Router;
@@ -25,9 +25,7 @@ try {
 
     // Automatically discover controllers and register routes from attributes
     $routeDiscovery = $container->get(RouteDiscovery::class);
-    $routeDiscovery->discoverRoutes([
-        __DIR__ . '/src/Controllers'
-    ]);
+    $routeDiscovery->discoverRoutes(__DIR__ . '/src/Domains');
 
     // Create server request
     $request = ServerRequestFactory::fromGlobals();
