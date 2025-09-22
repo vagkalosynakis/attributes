@@ -13,6 +13,20 @@ Domain-driven design project with automatic route discovery using PHP attributes
 composer install
 ```
 
+## Testing
+
+Run the comprehensive test suite using PestPHP:
+
+```bash
+./vendor/bin/pest
+```
+
+**Test Coverage:**
+- 22 tests covering all API endpoints
+- Request validation testing
+- Error handling verification
+- Self-contained, reliable test data
+
 ## Available Endpoints
 
 ### Users API
@@ -25,6 +39,7 @@ composer install
 ### Posts API
 - `GET /api/posts` - List all posts
 - `GET /api/posts/{id}` - Get post by ID
+- `GET /api/posts/search?title={query}` - Search posts by title
 - `POST /api/posts` - Create post (validated)
 - `PUT /api/posts/{id}` - Update post (validated)
 - `DELETE /api/posts/{id}` - Delete post
@@ -49,6 +64,16 @@ src/
 │       ├── Requests/          # Request validation
 │       ├── Services/          # Business logic
 │       └── Repositories/      # Data access
+
+tests/
+├── TestCase.php               # HTTP testing utilities
+├── Domains/
+│   ├── User/
+│   │   ├── Controllers/       # API endpoint tests
+│   │   └── Requests/          # Validation tests
+│   └── Post/
+│       ├── Controllers/       # API endpoint tests
+│       └── Requests/          # Validation tests
 ```
 
 ## Features
@@ -59,6 +84,7 @@ src/
 - Dependency injection
 - Middleware support
 - HTTP request validation
+- Comprehensive test suite (PestPHP)
 
 ## Request Validation
 
@@ -72,7 +98,7 @@ POST/PUT endpoints validate request data using Symfony Validator:
   "email": "john@example.com"
 }
 
-// Invalid request returns 422
+// Invalid request returns 400
 {
   "success": false,
   "error": "Validation failed",
@@ -92,7 +118,7 @@ POST/PUT endpoints validate request data using Symfony Validator:
   "user_id": 1
 }
 
-// Invalid request returns 422
+// Invalid request returns 400
 {
   "success": false,
   "error": "Validation failed",

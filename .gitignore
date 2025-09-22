@@ -2,5 +2,7 @@ vendor
 data/*
 logs/*
 
+.phpunit.result.cache
+
 !data
 !logs
