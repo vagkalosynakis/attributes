@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\User\Controllers;
 
+use App\Domains\Infrastructure\Attributes\Middleware;
 use App\Domains\Infrastructure\Attributes\Route;
+use App\Domains\Infrastructure\Middleware\LoggingMiddleware3;
 use App\Domains\User\Requests\CreateUserRequest;
 use App\Domains\User\Requests\UpdateUserRequest;
 use App\Domains\User\Services\UserService;
@@ -27,6 +29,7 @@ class UserController
     }
 
     #[Route(method: 'GET', path: '/users', prefix: 'api')]
+    #[Middleware([LoggingMiddleware3::class])]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         try {

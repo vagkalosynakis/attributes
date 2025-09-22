@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Controllers;
 
+use App\Domains\Infrastructure\Attributes\Middleware;
 use App\Domains\Infrastructure\Attributes\Route;
+use App\Domains\Infrastructure\Enums\MiddlewareGroups;
 use App\Domains\Post\Requests\CreatePostRequest;
 use App\Domains\Post\Requests\UpdatePostRequest;
 use App\Domains\Post\Services\PostService;
@@ -14,6 +16,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+#[Middleware(MiddlewareGroups::GROUP_1_MIDDLEWARES)]
 class PostController
 {
     private ValidatorInterface $validator;
