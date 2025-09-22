@@ -97,7 +97,7 @@ class UserController
                     'success' => false,
                     'error' => 'Validation failed',
                     'validation_errors' => $errorMessages
-                ], 422);
+                ], 400);
             }
             
             $userData = $this->userService->createUser($body);
@@ -147,7 +147,7 @@ class UserController
                     'success' => false,
                     'error' => 'Validation failed',
                     'validation_errors' => $errorMessages
-                ], 422);
+                ], 400);
             }
             
             $userData = $this->userService->updateUser($id, $body);

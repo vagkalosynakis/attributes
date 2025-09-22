@@ -97,7 +97,7 @@ class PostController
                     'success' => false,
                     'error' => 'Validation failed',
                     'validation_errors' => $errorMessages
-                ], 422);
+                ], 400);
             }
             
             $postData = $this->postService->createPost($body);
@@ -147,7 +147,7 @@ class PostController
                     'success' => false,
                     'error' => 'Validation failed',
                     'validation_errors' => $errorMessages
-                ], 422);
+                ], 400);
             }
             
             $postData = $this->postService->updatePost($id, $body);

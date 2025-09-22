@@ -28,24 +28,6 @@ class ContainerConfig
                 $service->initializeTables();
                 return $service;
             },
-            
-            // User domain
-            UserRepository::class => function (Container $container) {
-                return new UserRepository($container->get(DatabaseService::class));
-            },
-            
-            UserService::class => function (Container $container) {
-                return new UserService($container->get(UserRepository::class));
-            },
-            
-            // Post domain
-            PostRepository::class => function (Container $container) {
-                return new PostRepository($container->get(DatabaseService::class));
-            },
-            
-            PostService::class => function (Container $container) {
-                return new PostService($container->get(PostRepository::class));
-            },
         ]);
 
         return $builder->build();
