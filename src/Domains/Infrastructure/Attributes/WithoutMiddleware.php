@@ -13,7 +13,7 @@ class WithoutMiddleware
      * @param array<string> $middlewareClasses Array of middleware class names to exclude
      */
     public function __construct(
-        public readonly array $middlewareClasses
+        public array $middlewareClasses
     ) {
     }
 } 

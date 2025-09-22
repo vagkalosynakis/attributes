@@ -10,10 +10,10 @@ use Attribute;
 class Route
 {
     public function __construct(
-        public readonly string $method,
-        public readonly string $path,
-        public readonly ?string $prefix = null,
-        public readonly ?string $name = null
+        public string $method,
+        public string $path,
+        public ?string $prefix = null,
+        public ?string $name = null
     ) {
     }
 }

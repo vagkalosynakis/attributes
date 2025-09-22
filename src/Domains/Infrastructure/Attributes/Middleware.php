@@ -13,6 +13,6 @@ class Middleware
      * @param array<string> $middlewareClasses Array of middleware class names
      */
     public function __construct(
-        readonly array $middlewareClasses
+        public array $middlewareClasses
     ) { }
 }
