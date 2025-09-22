@@ -5,16 +5,25 @@ declare(strict_types=1);
 namespace App\Domains\Post\Controllers;
 
 use App\Domains\Infrastructure\Attributes\Route;
+use App\Domains\Post\Requests\CreatePostRequest;
+use App\Domains\Post\Requests\UpdatePostRequest;
 use App\Domains\Post\Services\PostService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PostController
 {
+    private ValidatorInterface $validator;
+
     public function __construct(
         private PostService $postService
     ) {
+        $this->validator = Validation::createValidatorBuilder()
+            ->enableAnnotationMapping()
+            ->getValidator();
     }
 
     #[Route(method: 'GET', path: '/posts', prefix: 'api')]
@@ -75,11 +84,27 @@ class PostController
                 ], 400);
             }
             
-            $post = $this->postService->createPost($body);
+            // Create and validate request object
+            $request = new CreatePostRequest($body);
+            $errors = $this->validator->validate($request);
+            
+            if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+                }
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Validation failed',
+                    'validation_errors' => $errorMessages
+                ], 422);
+            }
+            
+            $postData = $this->postService->createPost($body);
             
             return new JsonResponse([
                 'success' => true,
-                'data' => $post,
+                'data' => $postData,
                 'message' => 'Post created successfully'
             ], 201);
         } catch (\InvalidArgumentException $e) {
@@ -109,11 +134,27 @@ class PostController
                 ], 400);
             }
             
-            $post = $this->postService->updatePost($id, $body);
+            // Create and validate request object
+            $updateRequest = new UpdatePostRequest($body);
+            $errors = $this->validator->validate($updateRequest);
+            
+            if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+                }
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Validation failed',
+                    'validation_errors' => $errorMessages
+                ], 422);
+            }
+            
+            $postData = $this->postService->updatePost($id, $body);
             
             return new JsonResponse([
                 'success' => true,
-                'data' => $post,
+                'data' => $postData,
                 'message' => 'Post updated successfully'
             ]);
         } catch (\InvalidArgumentException $e) {

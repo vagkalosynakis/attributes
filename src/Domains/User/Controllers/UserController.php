@@ -5,16 +5,25 @@ declare(strict_types=1);
 namespace App\Domains\User\Controllers;
 
 use App\Domains\Infrastructure\Attributes\Route;
+use App\Domains\User\Requests\CreateUserRequest;
+use App\Domains\User\Requests\UpdateUserRequest;
 use App\Domains\User\Services\UserService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController
 {
+    private ValidatorInterface $validator;
+
     public function __construct(
         private UserService $userService
     ) {
+        $this->validator = Validation::createValidatorBuilder()
+            ->enableAnnotationMapping()
+            ->getValidator();
     }
 
     #[Route(method: 'GET', path: '/users', prefix: 'api')]
@@ -75,11 +84,27 @@ class UserController
                 ], 400);
             }
             
-            $user = $this->userService->createUser($body);
+            // Create and validate request object
+            $request = new CreateUserRequest($body);
+            $errors = $this->validator->validate($request);
+            
+            if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+                }
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Validation failed',
+                    'validation_errors' => $errorMessages
+                ], 422);
+            }
+            
+            $userData = $this->userService->createUser($body);
             
             return new JsonResponse([
                 'success' => true,
-                'data' => $user,
+                'data' => $userData,
                 'message' => 'User created successfully'
             ], 201);
         } catch (\InvalidArgumentException $e) {
@@ -109,11 +134,27 @@ class UserController
                 ], 400);
             }
             
-            $user = $this->userService->updateUser($id, $body);
+            // Create and validate request object
+            $updateRequest = new UpdateUserRequest($body);
+            $errors = $this->validator->validate($updateRequest);
+            
+            if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+                }
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Validation failed',
+                    'validation_errors' => $errorMessages
+                ], 422);
+            }
+            
+            $userData = $this->userService->updateUser($id, $body);
             
             return new JsonResponse([
                 'success' => true,
-                'data' => $user,
+                'data' => $userData,
                 'message' => 'User updated successfully'
             ]);
         } catch (\InvalidArgumentException $e) {
