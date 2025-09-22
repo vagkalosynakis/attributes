@@ -1,69 +1,58 @@
-# Simple PHP 8.4 Project with League Router and PHP-DI
+# PHP 8.0 Project with Attribute-Based Routing
 
-A minimal PHP 8.4 project demonstrating PSR-4 autoloading, League Router, and PHP-DI dependency injection.
+Domain-driven design project with automatic route discovery using PHP attributes.
 
 ## Requirements
 
-- PHP 8.4 or higher
+- PHP 8.0+
 - Composer
 
 ## Installation
 
-1. Install dependencies:
 ```bash
 composer install
 ```
 
-2. Start the development server:
-```bash
-php -S localhost:8000
-```
-
 ## Available Endpoints
 
-- `GET /` - Home page
-- `GET /about` - About page  
-- `GET /posts` - List all posts
-- `GET /posts/{id}` - Get specific post by ID
+### Users API
+- `GET /api/users` - List all users
+- `GET /api/users/{id}` - Get user by ID
+- `POST /api/users` - Create user
+- `PUT /api/users/{id}` - Update user
+- `DELETE /api/users/{id}` - Delete user
+
+### Posts API
+- `GET /api/posts` - List all posts
+- `GET /api/posts/{id}` - Get post by ID
+- `POST /api/posts` - Create post
+- `PUT /api/posts/{id}` - Update post
+- `DELETE /api/posts/{id}` - Delete post
 
 ## Project Structure
 
 ```
-├── src/
-│   ├── Controllers/
-│   │   ├── HomeController.php
-│   │   └── PostController.php
-│   └── Container/
-│       └── ContainerConfig.php
-├── index.php
-├── composer.json
-└── .htaccess
+src/
+├── Domains/
+│   ├── Infrastructure/
+│   │   ├── Attributes/        # Route, Middleware attributes
+│   │   ├── Container/         # DI configuration
+│   │   ├── Services/          # Route discovery
+│   │   └── Middleware/        # HTTP middleware
+│   ├── User/
+│   │   ├── Controllers/       # User endpoints
+│   │   ├── Services/          # Business logic
+│   │   └── Repositories/      # Data access
+│   └── Post/
+│       ├── Controllers/       # Post endpoints
+│       ├── Services/          # Business logic
+│       └── Repositories/      # Data access
 ```
 
 ## Features
 
-- ✅ PHP 8.4 compatibility
-- ✅ PSR-4 autoloading
-- ✅ League Router for routing
-- ✅ PHP-DI for dependency injection
-- ✅ JSON responses
-- ✅ Clean URL structure
-- ✅ Error handling
-
-## Testing
-
-You can test the endpoints using curl:
-
-```bash
-# Home page
-curl http://localhost:8000/
-
-# About page
-curl http://localhost:8000/about
-
-# All posts
-curl http://localhost:8000/posts
-
-# Specific post
-curl http://localhost:8000/posts/1
-```
+- Attribute-based routing
+- Automatic route discovery
+- Domain-driven architecture
+- Dependency injection
+- Middleware support
