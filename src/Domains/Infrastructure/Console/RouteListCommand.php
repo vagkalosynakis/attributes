@@ -74,36 +74,36 @@ class RouteListCommand extends Command
             $routeCollection = $routesProperty->getValue($router);
 
             // Check if it's an array or has iterator capabilities
-            if (is_array($routeCollection)) {
-                foreach ($routeCollection as $route) {
-                    if (is_object($route) && method_exists($route, 'getMethod') && method_exists($route, 'getPath')) {
-                        $method = $route->getMethod();
-                        $methodStr = is_array($method) ? strtoupper(implode('|', $method)) : strtoupper($method);
-                        
-                        $routes[] = [
-                            'Method' => $methodStr,
-                            'Path' => $route->getPath(),
-                            'Handler' => $this->getHandlerNameFromRoute($route)
-                        ];
-                    }
-                }
-            } elseif (is_object($routeCollection)) {
-                // Try to iterate if it's an object with iterator
-                if ($routeCollection instanceof \Traversable) {
+                            if (is_array($routeCollection)) {
                     foreach ($routeCollection as $route) {
                         if (is_object($route) && method_exists($route, 'getMethod') && method_exists($route, 'getPath')) {
-                                                     $method = $route->getMethod();
-                         $methodStr = is_array($method) ? strtoupper(implode('|', $method)) : strtoupper($method);
-                         
-                         $routes[] = [
-                             'Method' => $methodStr,
-                             'Path' => $route->getPath(),
-                             'Handler' => $this->getHandlerNameFromRoute($route)
-                         ];
+                            $method = $route->getMethod();
+                            $methodStr = is_array($method) ? strtoupper(implode('|', $method)) : strtoupper($method);
+                            
+                            $routes[] = [
+                                'Method' => $this->colorizeMethod($methodStr),
+                                'Path' => $route->getPath(),
+                                'Handler' => $this->getHandlerNameFromRoute($route)
+                            ];
+                        }
+                    }
+                } elseif (is_object($routeCollection)) {
+                    // Try to iterate if it's an object with iterator
+                    if ($routeCollection instanceof \Traversable) {
+                        foreach ($routeCollection as $route) {
+                            if (is_object($route) && method_exists($route, 'getMethod') && method_exists($route, 'getPath')) {
+                                $method = $route->getMethod();
+                                $methodStr = is_array($method) ? strtoupper(implode('|', $method)) : strtoupper($method);
+                                
+                                $routes[] = [
+                                    'Method' => $this->colorizeMethod($methodStr),
+                                    'Path' => $route->getPath(),
+                                    'Handler' => $this->getHandlerNameFromRoute($route)
+                                ];
+                            }
                         }
                     }
                 }
-            }
         } catch (\Exception $e) {
             // If reflection fails, we'll return an empty array
         }
@@ -163,5 +163,20 @@ class RouteListCommand extends Command
         }
 
         return 'Closure';
+    }
+
+    private function colorizeMethod(string $method): string
+    {
+        // Postman color scheme for HTTP methods
+        return match($method) {
+            'GET' => "\033[32m{$method}\033[0m",        // Green
+            'POST' => "\033[33m{$method}\033[0m",       // Yellow/Orange
+            'PUT' => "\033[34m{$method}\033[0m",        // Blue
+            'PATCH' => "\033[36m{$method}\033[0m",      // Cyan
+            'DELETE' => "\033[31m{$method}\033[0m",     // Red
+            'HEAD' => "\033[37m{$method}\033[0m",       // White
+            'OPTIONS' => "\033[35m{$method}\033[0m",    // Magenta
+            default => $method                           // No color for unknown methods
+        };
     }
 } 
