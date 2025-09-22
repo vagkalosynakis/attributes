@@ -1,0 +1,24 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Domains\Infrastructure\Console\RouteListCommand;
+use App\Domains\Infrastructure\Container\ContainerConfig;
+use App\Domains\Infrastructure\Services\RouteDiscovery;
+use League\Route\Router;
+use Symfony\Component\Console\Application;
+
+// Create DI container
+$container = ContainerConfig::create();
+
+// Create console application
+$application = new Application('Attributes Console', '1.0.0');
+
+// Add commands
+$application->add(new RouteListCommand($container));
+
+// Run the application
+$application->run(); 
