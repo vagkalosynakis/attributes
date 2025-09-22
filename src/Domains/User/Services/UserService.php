@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domains\User\Services;
 
 use App\Domains\User\Repositories\UserRepository;
-use App\Domains\User\Models\User;
 
 class UserService
 {
