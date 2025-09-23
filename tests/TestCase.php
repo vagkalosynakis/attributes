@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Tests;
+
 use App\Domains\Infrastructure\Container\ContainerConfig;
 use App\Domains\Infrastructure\Services\RouteDiscovery;
 use Laminas\Diactoros\ServerRequestFactory;

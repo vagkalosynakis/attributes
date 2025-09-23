@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../../TestCase.php';
+use Tests\TestCase;
 
 beforeEach(function () {
     $this->testCase = new TestCase();

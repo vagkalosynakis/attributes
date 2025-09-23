@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/ArchitectureConfig.php';
+use Tests\ArchitectureConfig;
 
 beforeEach(function () {
     $this->srcPath = __DIR__ . '/../src';
     $this->config = [
-        'domainNamespace' => DOMAIN_NAMESPACE,
-        'domainsPath' => $this->srcPath . DOMAINS_PATH,
-        'publicAttributeClass' => PUBLIC_ATTRIBUTE_CLASS,
-        'publicDomains' => PUBLIC_DOMAINS
+        'domainNamespace' => ArchitectureConfig::DOMAIN_NAMESPACE,
+        'domainsPath' => $this->srcPath . ArchitectureConfig::DOMAINS_PATH,
+        'publicAttributeClass' => ArchitectureConfig::PUBLIC_ATTRIBUTE_CLASS,
+        'publicDomains' => ArchitectureConfig::PUBLIC_DOMAINS
     ];
 });
 
