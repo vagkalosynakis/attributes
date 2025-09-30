@@ -8,8 +8,11 @@ use App\Domains\Demo\PropertyPromotionDemo;
 use App\Domains\Demo\UnionTypesDemo;
 use App\Domains\Demo\MatchExpressionDemo;
 use App\Domains\Demo\NullsafeOperatorDemo;
+use App\Domains\Infrastructure\Attributes\RateLimit;
 use App\Domains\Infrastructure\Attributes\Route;
+use App\Domains\Infrastructure\Enums\RateLimitInterval;
 use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -36,6 +39,39 @@ class DemoController
         ]);
 
         return new HtmlResponse($html, 200);
+    }
+
+    #[Route(method: 'GET', path: '/demo/rate-limit-test')]
+    #[RateLimit(amount: 5, intervalSeconds: RateLimitInterval::MINUTES)]
+    public function rateLimitTest(ServerRequestInterface $request): ResponseInterface
+    {
+        return new JsonResponse([
+            'message' => 'Rate limit test endpoint - limited to 5 requests per minute',
+            'timestamp' => date('Y-m-d H:i:s'),
+            'request_count' => 'Check X-RateLimit-Remaining header for remaining requests'
+        ]);
+    }
+
+    #[Route(method: 'GET', path: '/demo/rate-limit-strict')]
+    #[RateLimit(amount: 2, intervalSeconds: RateLimitInterval::SECONDS)]
+    public function rateLimitStrict(ServerRequestInterface $request): ResponseInterface
+    {
+        return new JsonResponse([
+            'message' => 'Strict rate limit - only 2 requests per second allowed',
+            'timestamp' => date('Y-m-d H:i:s'),
+            'warning' => 'This endpoint has a very strict rate limit!'
+        ]);
+    }
+
+    #[Route(method: 'GET', path: '/demo/rate-limit-generous')]
+    #[RateLimit(amount: 100, intervalSeconds: RateLimitInterval::HOURS)]
+    public function rateLimitGenerous(ServerRequestInterface $request): ResponseInterface
+    {
+        return new JsonResponse([
+            'message' => 'Generous rate limit - 100 requests per hour allowed',
+            'timestamp' => date('Y-m-d H:i:s'),
+            'note' => 'This endpoint allows more requests but still has protection'
+        ]);
     }
 
     private function generateHtml(array $results): string

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Domains\Infrastructure\Services;
 
 use App\Domains\Infrastructure\Attributes\Middleware;
+use App\Domains\Infrastructure\Attributes\RateLimit;
 use App\Domains\Infrastructure\Attributes\Route;
 use App\Domains\Infrastructure\Attributes\WithoutMiddleware;
+use App\Domains\Infrastructure\Middleware\RateLimitMiddleware;
 
 use DirectoryIterator;
 use League\Route\Router;
@@ -20,7 +22,8 @@ class RouteDiscovery
 
     public function __construct(
         private Router $router,
-        private Container $container
+        private Container $container,
+        private RateLimitStorage $rateLimitStorage
     ) {
     }
 
@@ -166,11 +169,11 @@ class RouteDiscovery
                 // Remove excluded middleware
                 $methodMiddleware = array_diff($methodMiddleware, $methodExcludedMiddleware);
                 
+                // Check for RateLimit attribute and add rate limit middleware
+                $rateLimitMiddleware = $this->getRateLimitMiddleware($method);
+                
                 // Combine class and method middleware (class middleware first)
                 $allMiddleware = array_merge($classMiddleware, $methodMiddleware);
-                
-                // Remove any duplicates that might have been introduced
-                $allMiddleware = array_unique($allMiddleware);
                 
                 // Register the route
                 $leagueRoute = $this->router->map(
@@ -182,6 +185,11 @@ class RouteDiscovery
                 // Add middleware to the route
                 foreach ($allMiddleware as $middlewareClass) {
                     $leagueRoute->middleware($this->container->get($middlewareClass));
+                }
+                
+                // Add rate limit middleware if present (after other middleware)
+                if ($rateLimitMiddleware !== null) {
+                    $leagueRoute->middleware($rateLimitMiddleware);
                 }
             }
         }
@@ -247,5 +255,26 @@ class RouteDiscovery
         
         // Handle root path case
         return $finalPath === '/' ? '/' : rtrim($finalPath, '/');
+    }
+
+    /**
+     * Get rate limit middleware instance if RateLimit attribute is present
+     */
+    private function getRateLimitMiddleware(ReflectionMethod $method): ?RateLimitMiddleware
+    {
+        $rateLimitAttributes = $method->getAttributes(RateLimit::class);
+        
+        if (empty($rateLimitAttributes)) {
+            return null;
+        }
+        
+        /** @var RateLimit $rateLimit */
+        $rateLimit = $rateLimitAttributes[0]->newInstance();
+        
+        return new RateLimitMiddleware(
+            $this->rateLimitStorage,
+            $rateLimit->amount,
+            $rateLimit->intervalSeconds
+        );
     }
 }

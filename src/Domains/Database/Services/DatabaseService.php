@@ -112,6 +112,18 @@ class DatabaseService
             )
         ");
 
+        // Create rate_limits table
+        $connection->exec("
+            CREATE TABLE IF NOT EXISTS rate_limits (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                rate_key VARCHAR(255) NOT NULL UNIQUE,
+                request_count INTEGER NOT NULL DEFAULT 0,
+                expires_at INTEGER NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
         // Insert sample data if tables are empty
         $this->insertSampleData();
     }
