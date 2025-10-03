@@ -6,6 +6,7 @@ namespace App\Domains\User\Controllers;
 
 use App\Domains\Infrastructure\Attributes\Middleware;
 use App\Domains\Infrastructure\Attributes\Route;
+use App\Domains\Infrastructure\Attributes\Cache;
 use App\Domains\Infrastructure\Middleware\LoggingMiddleware3;
 use App\Domains\User\Requests\CreateUserRequest;
 use App\Domains\User\Requests\UpdateUserRequest;
@@ -30,6 +31,7 @@ class UserController
 
     #[Route(method: 'GET', path: '/users', prefix: 'api')]
     #[Middleware([LoggingMiddleware3::class])]
+    #[Cache(ttl: 60)]
     public function index(ServerRequestInterface $request): ResponseInterface
     {
         try {

@@ -124,6 +124,18 @@ class DatabaseService
             )
         ");
 
+        // Create cache_responses table
+        $connection->exec("
+            CREATE TABLE IF NOT EXISTS cache_responses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                cache_key VARCHAR(255) NOT NULL UNIQUE,
+                response_data TEXT NOT NULL,
+                expires_at INTEGER NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
         // Insert sample data if tables are empty
         $this->insertSampleData();
     }

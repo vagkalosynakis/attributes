@@ -8,14 +8,21 @@ use App\Domains\Demo\PropertyPromotionDemo;
 use App\Domains\Demo\UnionTypesDemo;
 use App\Domains\Demo\MatchExpressionDemo;
 use App\Domains\Demo\NullsafeOperatorDemo;
+use App\Domains\Infrastructure\Attributes\Middleware;
 use App\Domains\Infrastructure\Attributes\RateLimit;
 use App\Domains\Infrastructure\Attributes\Route;
+use App\Domains\Infrastructure\Attributes\WithoutMiddleware;
+use App\Domains\Infrastructure\Attributes\Cache;
+use App\Domains\Infrastructure\Enums\MiddlewareGroups;
 use App\Domains\Infrastructure\Enums\RateLimitInterval;
+use App\Domains\Infrastructure\Middleware\LoggingMiddleware;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+#[Middleware(MiddlewareGroups::GROUP_1_MIDDLEWARES)]
+#[WithoutMiddleware([LoggingMiddleware::class])]
 class DemoController
 {
     #[Route(method: 'GET', path: '/demo')]
@@ -35,7 +42,7 @@ class DemoController
             'property_promotion' => $propertyResult,
             'union_types' => $unionResult,
             'match_expression' => $matchResult,
-            'nullsafe_operator' => $nullsafeResult
+            'nullsafe_operator' => $nullsafeResult 
         ]);
 
         return new HtmlResponse($html, 200);
@@ -71,6 +78,36 @@ class DemoController
             'message' => 'Generous rate limit - 100 requests per hour allowed',
             'timestamp' => date('Y-m-d H:i:s'),
             'note' => 'This endpoint allows more requests but still has protection'
+        ]);
+    }
+
+    #[Route(method: 'GET', path: '/demo/cache-test')]
+    #[Cache(ttl: 30)]
+    public function cacheTest(ServerRequestInterface $request): ResponseInterface
+    {
+        // Simulate some processing time
+        usleep(500000); // 0.5 seconds
+        
+        return new JsonResponse([
+            'message' => 'This response is cached for 30 seconds',
+            'timestamp' => date('Y-m-d H:i:s'),
+            'processing_time' => '0.5 seconds simulated',
+            'cache_info' => 'First request will be slow, subsequent requests within 30 seconds will be fast!'
+        ]);
+    }
+
+    #[Route(method: 'GET', path: '/demo/cache-long')]
+    #[Cache(ttl: 300)]
+    public function cacheLong(ServerRequestInterface $request): ResponseInterface
+    {
+        // Simulate heavy processing
+        usleep(1000000); // 1 second
+        
+        return new JsonResponse([
+            'message' => 'This response is cached for 5 minutes (300 seconds)',
+            'timestamp' => date('Y-m-d H:i:s'),
+            'processing_time' => '1 second simulated',
+            'cache_info' => 'This endpoint simulates heavy processing and caches for 5 minutes'
         ]);
     }
 

@@ -8,7 +8,9 @@ use App\Domains\Infrastructure\Attributes\Middleware;
 use App\Domains\Infrastructure\Attributes\RateLimit;
 use App\Domains\Infrastructure\Attributes\Route;
 use App\Domains\Infrastructure\Attributes\WithoutMiddleware;
+use App\Domains\Infrastructure\Attributes\Cache;
 use App\Domains\Infrastructure\Middleware\RateLimitMiddleware;
+use App\Domains\Infrastructure\Middleware\CacheMiddleware;
 
 use DirectoryIterator;
 use League\Route\Router;
@@ -23,7 +25,8 @@ class RouteDiscovery
     public function __construct(
         private Router $router,
         private Container $container,
-        private RateLimitStorage $rateLimitStorage
+        private RateLimitStorage $rateLimitStorage,
+        private CacheStorage $cacheStorage
     ) {
     }
 
@@ -172,6 +175,9 @@ class RouteDiscovery
                 // Check for RateLimit attribute and add rate limit middleware
                 $rateLimitMiddleware = $this->getRateLimitMiddleware($method);
                 
+                // Check for Cache attribute and add cache middleware
+                $cacheMiddleware = $this->getCacheMiddleware($method);
+                
                 // Combine class and method middleware (class middleware first)
                 $allMiddleware = array_merge($classMiddleware, $methodMiddleware);
                 
@@ -187,7 +193,12 @@ class RouteDiscovery
                     $leagueRoute->middleware($this->container->get($middlewareClass));
                 }
                 
-                // Add rate limit middleware if present (after other middleware)
+                // Add cache middleware if present (before rate limit middleware)
+                if ($cacheMiddleware !== null) {
+                    $leagueRoute->middleware($cacheMiddleware);
+                }
+                
+                // Add rate limit middleware if present (after cache middleware)
                 if ($rateLimitMiddleware !== null) {
                     $leagueRoute->middleware($rateLimitMiddleware);
                 }
@@ -275,6 +286,26 @@ class RouteDiscovery
             $this->rateLimitStorage,
             $rateLimit->amount,
             $rateLimit->intervalSeconds
+        );
+    }
+
+    /**
+     * Get cache middleware instance if Cache attribute is present
+     */
+    private function getCacheMiddleware(ReflectionMethod $method): ?CacheMiddleware
+    {
+        $cacheAttributes = $method->getAttributes(Cache::class);
+        
+        if (empty($cacheAttributes)) {
+            return null;
+        }
+        
+        /** @var Cache $cache */
+        $cache = $cacheAttributes[0]->newInstance();
+        
+        return new CacheMiddleware(
+            $this->cacheStorage,
+            $cache->ttl
         );
     }
 }
